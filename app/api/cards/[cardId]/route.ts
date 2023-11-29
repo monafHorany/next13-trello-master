@@ -8,6 +8,7 @@ export async function GET(
   { params }: { params: { cardId: string } }
 ) {
   try {
+    
     const { userId, orgId } = auth();
 
     if (!userId || !orgId) {

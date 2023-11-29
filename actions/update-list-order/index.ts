@@ -26,9 +26,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       db.list.update({
         where: {
           id: list.id,
-          board: {
-            orgId,
-          },
+          boardId,
         },
         data: {
           order: list.order,
@@ -38,6 +36,8 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
     lists = await db.$transaction(transaction);
   } catch (error) {
+    console.log(error);
+
     return {
       error: "Failed to reorder."
     }

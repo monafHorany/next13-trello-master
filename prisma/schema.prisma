@@ -1,6 +1,7 @@
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
+  
 }
 
 generator client {
@@ -8,7 +9,7 @@ generator client {
 }
 
 model Board {
-  id            String @id @default(uuid()) @map("_id")
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
   orgId         String
   title         String
   imageId       String
@@ -24,33 +25,33 @@ model Board {
 }
 
 model List {
-  id    String @id @default(uuid()) @map("_id")
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
   title String
   order Int
 
-  boardId String
-  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  boardId String @db.ObjectId
+  board   Board  @relation(fields: [boardId], references: [id])
 
   cards Card[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([boardId])
+  // @@index([boardId])
 }
 
 model Card {
-  id          String  @id @default(uuid()) @map("_id")
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   order       Int
   description String?
-  listId      String
-  list        List    @relation(fields: [listId], references: [id], onDelete: Cascade)
+  listId      String  @db.ObjectId
+  list        List    @relation(fields: [listId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([listId])
+  // @@index([listId])
 }
 
 enum ACTION {
@@ -66,7 +67,7 @@ enum ENTITY_TYPE {
 }
 
 model AuditLog {
-  id          String      @id @default(uuid()) @map("_id")
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
   orgId       String
   action      ACTION
   entityId    String
@@ -81,7 +82,7 @@ model AuditLog {
 }
 
 model OrgLimit {
-  id    String @id @default(uuid()) @map("_id")
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
   orgId String @unique
   count Int    @default(0)
 
@@ -90,7 +91,7 @@ model OrgLimit {
 }
 
 model OrgSubscription {
-  id    String @id @default(uuid()) @map("_id")
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
   orgId String @unique
 
   stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
