@@ -22,7 +22,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
   const { title, boardId, listId } = data;
   let card;
-
+  // console.log({ title, boardId, listId });
   try {
     const list = await db.list.findUnique({
       where: {
@@ -32,6 +32,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         },
       },
     });
+    console.log({ list});
 
     if (!list) {
       return {
@@ -63,8 +64,8 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
   } catch (error) {
     return {
-      error: "Failed to create."
-    }
+      error: "Failed to create.",
+    };
   }
 
   revalidatePath(`/board/${boardId}`);

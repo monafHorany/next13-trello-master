@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 const headingFont = localFont({
   src: "../../public/fonts/font.woff2"
 });
-
+console.log(process.env.DATABASE_URL)
 const textFont = Poppins({
   subsets: ["latin"],
   weight: [
