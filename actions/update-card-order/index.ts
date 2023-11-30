@@ -9,7 +9,7 @@ import { createSafeAction } from "@/lib/create-safe-action";
 import { UpdateCardOrder } from "./schema";
 import { InputType, ReturnType } from "./types";
 
-const handler = async (data: InputType): Promise<ReturnType> => {
+const handler = async (data: InputType) => {
   const { userId, orgId } = auth();
 
   if (!userId || !orgId) {
@@ -18,31 +18,32 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     };
   }
 
-  const { items, boardId } = data;
+  const { items, boardId, } = data;
   let updatedCards;
-  console.log(items);
+
   try {
-    const transaction = items.map((card) =>
-      db.card.update({
+    const transaction = items.map((card) => 
+      db.card.updateMany({
         where: {
           id: card.id,
           list: {
-            boardId,
+            board: {
+              orgId,
+            },
           },
         },
         data: {
           order: card.order,
           listId: card.listId,
         },
-      })
+      }),
     );
 
     updatedCards = await db.$transaction(transaction);
   } catch (error) {
-    console.log(error);
     return {
-      error: "Failed to reorder.",
-    };
+      error: "Failed to reorder."
+    }
   }
 
   revalidatePath(`/board/${boardId}`);

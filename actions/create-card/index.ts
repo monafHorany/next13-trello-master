@@ -11,9 +11,8 @@ import { createSafeAction } from "@/lib/create-safe-action";
 import { CreateCard } from "./schema";
 import { InputType, ReturnType } from "./types";
 
-const handler = async (data: InputType): Promise<ReturnType> => {
+const handler = async (data: InputType)  => {
   const { userId, orgId } = auth();
-  console.log({ orgId });
 
   if (!userId || !orgId) {
     return {
@@ -25,10 +24,12 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   let card;
 
   try {
-    const list = await db.list.findUnique({
+    const list = await db.list.findMany({
       where: {
         id: listId,
-        boardId,
+        board: {
+          orgId,
+        },
       },
     });
 
@@ -61,10 +62,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       action: ACTION.CREATE,
     });
   } catch (error) {
-    console.log(error);
     return {
-      error: "Failed to create.",
-    };
+      error: "Failed to create."
+    }
   }
 
   revalidatePath(`/board/${boardId}`);

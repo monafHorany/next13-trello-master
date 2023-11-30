@@ -11,7 +11,7 @@ import { createSafeAction } from "@/lib/create-safe-action";
 import { CopyCard } from "./schema";
 import { InputType, ReturnType } from "./types";
 
-const handler = async (data: InputType): Promise<ReturnType> => {
+const handler = async (data: InputType) => {
   const { userId, orgId } = auth();
 
   if (!userId || !orgId) {
@@ -24,12 +24,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   let card;
 
   try {
-    const cardToCopy = await db.card.findUnique({
+    const cardToCopy = await db.card.findMany({
       where: {
         id,
-        list: {
-          boardId,
-        },
       },
     });
 
@@ -38,7 +35,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     }
 
     const lastCard = await db.card.findFirst({
-      where: { listId: cardToCopy.listId },
+      where: { listId: cardToCopy[0].listId },
       orderBy: { order: "desc" },
       select: { order: true },
     });
@@ -47,10 +44,10 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
     card = await db.card.create({
       data: {
-        title: `${cardToCopy.title} - Copy`,
-        description: cardToCopy.description,
+        title: `${cardToCopy[0].title} - Copy`,
+        description: cardToCopy[0].description,
         order: newOrder,
-        listId: cardToCopy.listId,
+        listId: cardToCopy[0].listId,
       },
     });
 

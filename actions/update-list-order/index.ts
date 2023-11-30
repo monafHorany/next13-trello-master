@@ -1,15 +1,12 @@
 "use server";
-
 import { auth } from "@clerk/nextjs";
 import { revalidatePath } from "next/cache";
-
 import { db } from "@/lib/db";
 import { createSafeAction } from "@/lib/create-safe-action";
-
 import { UpdateListOrder } from "./schema";
 import { InputType, ReturnType } from "./types";
 
-const handler = async (data: InputType): Promise<ReturnType> => {
+const handler = async (data: InputType) => {
   const { userId, orgId } = auth();
 
   if (!userId || !orgId) {
@@ -23,10 +20,12 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
   try {
     const transaction = items.map((list) => 
-      db.list.update({
+      db.list.updateMany({
         where: {
           id: list.id,
-          boardId,
+          board: {
+            orgId,
+          },
         },
         data: {
           order: list.order,
@@ -36,8 +35,6 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
     lists = await db.$transaction(transaction);
   } catch (error) {
-    console.log(error);
-
     return {
       error: "Failed to reorder."
     }

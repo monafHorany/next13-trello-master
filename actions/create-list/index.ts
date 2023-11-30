@@ -11,7 +11,7 @@ import { InputType, ReturnType } from "./types";
 import { createAuditLog } from "@/lib/create-audit-log";
 import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
-const handler = async (data: InputType): Promise<ReturnType> => {
+const handler = async (data: InputType) => {
   const { userId, orgId } = auth();
 
   if (!userId || !orgId) {
@@ -24,7 +24,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   let list;
 
   try {
-    const board = await db.board.findUnique({
+    const board = await db.board.findMany({
       where: {
         id: boardId,
         orgId,
@@ -37,13 +37,13 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       };
     }
 
-    const lastList = await db.list.findFirst({
+    const lastList = await db.list.findMany({
       where: { boardId: boardId },
       orderBy: { order: "desc" },
       select: { order: true },
     });
 
-    const newOrder = lastList ? lastList.order + 1 : 1;
+    const newOrder = lastList[0] ? lastList[0].order + 1 : 1;
 
     list = await db.list.create({
       data: {
@@ -58,11 +58,11 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       entityId: list.id,
       entityType: ENTITY_TYPE.LIST,
       action: ACTION.CREATE,
-    })
+    });
   } catch (error) {
     return {
-      error: "Failed to create."
-    }
+      error: "Failed to create.",
+    };
   }
 
   revalidatePath(`/board/${boardId}`);

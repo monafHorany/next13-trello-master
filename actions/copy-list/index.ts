@@ -11,7 +11,7 @@ import { createSafeAction } from "@/lib/create-safe-action";
 import { CopyList } from "./schema";
 import { InputType, ReturnType } from "./types";
 
-const handler = async (data: InputType): Promise<ReturnType> => {
+const handler = async (data: InputType)  => {
   const { userId, orgId } = auth();
 
   if (!userId || !orgId) {

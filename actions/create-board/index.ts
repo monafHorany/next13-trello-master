@@ -10,13 +10,13 @@ import { InputType, ReturnType } from "./types";
 import { CreateBoard } from "./schema";
 import { createAuditLog } from "@/lib/create-audit-log";
 import { ACTION, ENTITY_TYPE } from "@prisma/client";
-// import {
-//   incrementAvailableCount,
+// import { 
+//   incrementAvailableCount, 
 //   hasAvailableCount
 // } from "@/lib/org-limit";
 // import { checkSubscription } from "@/lib/subscription";
 
-const handler = async (data: InputType): Promise<ReturnType> => {
+const handler = async (data: InputType)  => {
   const { userId, orgId } = auth();
 
   if (!userId || !orgId) {
@@ -36,18 +36,17 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
   const { title, image } = data;
 
-  const [imageId, imageThumbUrl, imageFullUrl, imageLinkHTML, imageUserName] =
-    image.split("|");
+  const [
+    imageId,
+    imageThumbUrl,
+    imageFullUrl,
+    imageLinkHTML,
+    imageUserName
+  ] = image.split("|");
 
-  if (
-    !imageId ||
-    !imageThumbUrl ||
-    !imageFullUrl ||
-    !imageUserName ||
-    !imageLinkHTML
-  ) {
+  if (!imageId || !imageThumbUrl || !imageFullUrl || !imageUserName || !imageLinkHTML) {
     return {
-      error: "Missing fields. Failed to create board.",
+      error: "Missing fields. Failed to create board."
     };
   }
 
@@ -63,7 +62,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         imageFullUrl,
         imageUserName,
         imageLinkHTML,
-      },
+      }
     });
 
     // if (!isPro) {
@@ -75,12 +74,11 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       entityId: board.id,
       entityType: ENTITY_TYPE.BOARD,
       action: ACTION.CREATE,
-    });
+    })
   } catch (error) {
-    console.log(error);
     return {
-      error: "Failed to create.",
-    };
+      error: "Failed to create."
+    }
   }
 
   revalidatePath(`/board/${board.id}`);
