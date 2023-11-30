@@ -23,7 +23,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
   const { title, boardId, listId } = data;
   let card;
-  console.log({ title, listId });
+
   try {
     const list = await db.list.findUnique({
       where: {
@@ -31,7 +31,6 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         boardId,
       },
     });
-    console.log({ list });
 
     if (!list) {
       return {
